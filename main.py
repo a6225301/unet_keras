@@ -12,10 +12,11 @@ data_gen_args = dict(rotation_range=0.2,
                     horizontal_flip=True,
                     fill_mode='nearest')
 myGene = trainGenerator(2,'data/PCA_Seg/train','image','org_label',data_gen_args,save_to_dir = None)
+valGene = valGenerator(2,'data/membrane/val','image','label',data_gen_args,save_to_dir = None)
 
 model = unet()
 model_checkpoint = ModelCheckpoint('unet_pca_seg.hdf5', monitor='loss',verbose=1, save_best_only=True)
-model.fit_generator(myGene,steps_per_epoch=30,epochs=1,callbacks=[model_checkpoint])
+model.fit_generator(myGene,steps_per_epoch=30,epochs=1,callbacks=[model_checkpoint], validation_data=valGene)
 
 testGene = testGenerator("data/PCA_Seg/test")
 results = model.predict_generator(testGene, 3, verbose=1)
